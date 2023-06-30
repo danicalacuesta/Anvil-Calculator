@@ -1,0 +1,51 @@
+from ._anvil_designer import Form1Template
+from anvil import *
+
+class Form1(Form1Template):
+  def __init__(self, **properties):
+    # Set Form properties and Data Bindings.
+    self.init_components(**properties)
+
+    # Any code you write here will run before the form opens.
+    characters = [ "+", "-", "*", "/", 
+                   'c', 'd', "="]
+                  
+    self.button= {}
+    grid_panel= GridPanel()
+    #makes buttons 
+    #enumerate returns two different values instead of one
+    #idx represents the counting, it is iteration variable
+    for idx, i in enumerate(characters):
+      if i == "=":
+        color = "#000000"
+      elif i in ["c", 'd']:
+        color= "#F0AD6A"
+      else:
+        color= "#EF7B93"
+      if idx < 4:
+        row = 'A'
+      else:
+        row= 'B'
+      self.button[i]= Button(text=i, font="raleway", 
+                             foreground= "#FFF", background=color )
+      self.button[i].tag.name=i
+      self.button[i].set_event_handler('click', self.click)
+      #adds button to the grid
+      grid_panel.add_component(self.button[i], row= row, col_xs= 3, width_xs=1)
+      #adds grid to interface
+    self.add_component(grid_panel)
+
+  def click (self, **event_args):
+    input = event_args['sender'].tag.name
+    if input == "=":
+      self.input_box.text = eval(self.input_box.text)
+    elif input== "c" :
+      self.input_box.text= ""
+    elif input == "d":
+      self.input_box.text = self.input_box.text[:-1]
+    else: 
+      self.input_box.text += event_args['sender'].tag.name
+
+  def input_box_pressed_enter(self, **event_args):
+    """This method is called when the user presses Enter in this text box"""
+    self.input_box.text = eval(self.input_box.text)
